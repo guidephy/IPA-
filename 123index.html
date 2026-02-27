@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>115年大學申請入學落點建議</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .std-tag { padding: 1px 0; border-radius: 4px; font-size: 10px; font-weight: 900; text-align: center; display: block; width: 34px; }
+        .tag-頂標 { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .tag-前標 { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+        .tag-均標 { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .tag-後標 { background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0; }
+        .tag-不採計 { background: #f8fafc; color: #cbd5e1; border: 1px solid #f1f5f9; }
+        .score-input { border: 1.5px solid #e2e8f0; transition: all 0.2s; }
+        .score-input:focus { border-color: #2563eb; background: #fff; outline: none; }
+        .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        @media (min-width: 1024px) { .input-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; } }
+        #search-section { display: none; }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto p-4 sm:p-5">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">📋</span>
+                    <h1 class="text-base sm:text-lg font-black text-slate-950 tracking-tighter">115 年申請入學落點建議</h1>
+                </div>
+                <div id="data-status" class="text-[8px] font-black text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 uppercase">Ready</div>
+            </div>
+            
+            <div class="input-grid mb-4">
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 block text-center mb-0.5">國文</label>
+                    <input type="number" id="ch" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-lg py-2 text-center font-black text-slate-950">
+                    <div id="level-ch" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 block text-center mb-0.5">英文</label>
+                    <input type="number" id="en" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-xl py-2 text-center font-black text-slate-950">
+                    <div id="level-en" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-blue-500 block text-center mb-0.5">數A</label>
+                    <input type="number" id="ma" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-xl py-2 text-center font-black text-slate-950">
+                    <div id="level-ma" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-emerald-500 block text-center mb-0.5">數B</label>
+                    <input type="number" id="mb" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-xl py-2 text-center font-black text-slate-950">
+                    <div id="level-mb" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 block text-center mb-0.5">社會</label>
+                    <input type="number" id="so" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-xl py-2 text-center font-black text-slate-950">
+                    <div id="level-so" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 block text-center mb-0.5">自然</label>
+                    <input type="number" id="sc" oninput="updateLevels()" placeholder="分數" class="score-input w-full bg-slate-50 rounded-xl py-2 text-center font-black text-slate-950">
+                    <div id="level-sc" class="text-[8px] text-center font-black h-3"></div>
+                </div>
+            </div>
+
+            <button onclick="firstSearch()" id="btn-search" disabled class="w-full bg-blue-600 text-white font-black py-3 rounded-xl shadow-md transition-all text-sm active:scale-95">
+                立即分析申請入學
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 sm:p-5 flex-grow w-full">
+        <section id="search-section" class="mb-5 p-5 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-4 shadow-sm">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-[10px] font-black text-blue-700 uppercase tracking-widest flex items-center gap-2">💡 進階篩選工具</h2>
+                <div id="result-count" class="bg-blue-600 text-white px-3 py-1 rounded text-[9px] font-black">0 筆符合</div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <input type="text" id="keyword" oninput="runFilter()" placeholder="🔍 搜尋大學或科系名稱..." class="md:col-span-4 bg-white border-none rounded-xl px-5 py-3 text-xs font-bold shadow-sm outline-none">
+                <select id="regionFilter" onchange="runFilter()" class="md:col-span-3 bg-white border-none rounded-xl px-5 py-3 text-xs font-bold text-slate-600 outline-none shadow-sm">
+                    <option value="ALL">📍 所有地區</option>
+                    <option value="NORTH">北部</option><option value="CENTRAL">中部</option><option value="SOUTH">南部</option><option value="EAST">東部</option><option value="ISLAND">離島</option>
+                </select>
+                <select id="typeFilter" onchange="runFilter()" class="md:col-span-2 bg-white border-none rounded-xl px-5 py-3 text-xs font-bold text-slate-600 outline-none shadow-sm">
+                    <option value="ALL">🏛️ 所有學校</option>
+                    <option value="PUBLIC">國立</option><option value="PRIVATE">私立</option>
+                </select>
+                <select id="groupFilter" onchange="runFilter()" class="md:col-span-3 bg-slate-900 text-white rounded-xl px-5 py-3 text-xs font-black outline-none shadow-lg">
+                    <option value="ALL">🎓 所有學群</option>
+                </select>
+            </div>
+        </section>
+
+        <div id="result-container" class="space-y-4 pb-10">
+            <div class="py-24 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-300 font-black">
+                請輸入分數並點擊「立即分析」
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-8 text-slate-400 text-[10px] font-bold tracking-widest border-t border-slate-100 bg-white/50 mt-10">
+        桃園市立觀音高中 林仟弘老師製作
+    </footer>
+
+    <script>
+        let db = [];
+        const stdMap = { '國文': [13,12,10,9,7], '英文': [13,11,8,5,3], '數學A': [12,10,8,5,4], '數學B': [11,9,5,3,2], '社會': [13,12,10,8,7], '自然': [13,12,9,7,5] };
+        
+        const regionMapping = {
+            'NORTH': ["國立臺灣大學", "國立臺灣師範大學", "東吳大學", "國立政治大學", "中原大學", "國立清華大學", "國立陽明交通大學", "淡江大學", "國立中央大學", "中國文化大學", "大同大學", "輔仁大學", "國立臺灣海洋大學", "國立臺北藝術大學", "長庚大學", "國立臺北教育大學", "臺北市立大學", "國立體育大學", "元智大學", "中華大學", "華梵大學", "銘傳大學", "世新大學", "實踐大學", "國立臺灣藝術大學", "玄奘大學", "真理大學", "國立臺北大學", "臺北醫學大學", "開南大學", "康寧大學", "馬偕醫學院"],
+            'CENTRAL': ["國立中興大學", "東海大學", "中國醫藥大學", "逢甲大學", "靜宜大學", "國立彰化師範大學", "中山醫學大學", "國立臺中教育大學", "大葉大學", "國立暨南國際大學", "國立臺灣體育運動大學", "亞洲大學", "國立聯合大學"],
+            'SOUTH': ["國立成功大學", "高雄醫學大學", "國立高雄師範大學", "國立中山大學", "國立臺南大學", "國立屏東大學", "國立中正大學", "義守大學", "長榮大學", "南華大學", "國立臺南藝術大學", "國立嘉義大學", "國立高雄大學", "中信金融管理學院"],
+            'EAST': ["國立東華大學", "國立臺東大學", "慈濟大學", "佛光大學", "國立宜蘭大學"],
+            'ISLAND': ["國立金門大學"]
+        };
+
+        async function init() {
+            try {
+                const res = await fetch('apply_data.json');
+                db = await res.json();
+                
+                // 動態產生學群選單
+                const groups = [...new Set(db.map(i => i['學群']))].filter(x => x);
+                const gFilter = document.getElementById('groupFilter');
+                groups.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g; opt.innerText = g;
+                    gFilter.appendChild(opt);
+                });
+
+                document.getElementById('btn-search').disabled = false;
+                document.getElementById('data-status').innerText = "DB Connected";
+            } catch (e) { console.error(e); }
+        }
+
+        function updateLevels() {
+            ['ch','en','ma','mb','so','sc'].forEach(id => {
+                const sub = id==='ch'?'國文':id==='en'?'英文':id==='ma'?'數學A':id==='mb'?'數學B':id==='so'?'社會':'自然';
+                const val = parseInt(document.getElementById(id).value);
+                const info = document.getElementById('level-'+id);
+                if(!val && val !== 0) { info.innerText = ""; return; }
+                const arr = stdMap[sub];
+                let lv = "未達", color = "text-slate-300";
+                if(val >= arr[0]) { lv="頂"; color="text-red-700"; }
+                else if(val >= arr[1]) { lv="前"; color="text-orange-600"; }
+                else if(val >= arr[2]) { lv="均"; color="text-blue-700"; }
+                else if(val >= arr[3]) { lv="後"; color="text-slate-500"; }
+                else if(val >= arr[4]) { lv="底"; color="text-amber-900"; }
+                info.innerText = lv; info.className = `text-[8px] text-center font-black h-3 ${color}`;
+            });
+        }
+
+        function firstSearch() {
+            const message = "【申請入學溫馨提醒】\n\n本系統之篩選結果僅供初步參考。申請入學涉及「倍率篩選」與「第二階段指定項目甄試」，過程更為複雜。\n\n建議您除了參考本系統外，務必詳閱簡章分則、並與老師、家長充分討論。\n\n祝福您選系順利，金榜題名！";
+            alert(message);
+            document.getElementById('search-section').style.display = 'block';
+            runFilter();
+            window.scrollTo({ top: document.getElementById('search-section').offsetTop - 150, behavior: 'smooth' });
+        }
+
+        function getPt(sub, score) { const arr = stdMap[sub]; for(let i=0; i<5; i++) if(score >= arr[i]) return 5-i; return 0; }
+
+        function renderThresholds(i) {
+            return ['國文','英文','數學A','數學B','社會','自然'].map(s => {
+                const t = i[s+'檢定'];
+                return `<div class="flex flex-col items-center gap-0.5">
+                            <span class="text-[7px] font-black text-slate-300">${s.replace('數學','數')}</span>
+                            <span class="std-tag ${t && t !== '--' ? 'tag-'+t : 'tag-不採計'}">${t || '--'}</span>
+                        </div>`;
+            }).join('');
+        }
+
+        function renderMultipliers(i) {
+            const res = [];
+            ['國文','英文','數學A','數學B','社會','自然'].forEach(s => {
+                const m = i[s+'倍率'];
+                if(m && m != 0) res.push(`<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100">${s[0]}:${m}</span>`);
+            });
+            return res.join(' ');
+        }
+
+        function renderOrder(i, yr) {
+            const orders = [];
+            for(let j=1; j<=6; j++) {
+                const step = i[`${yr}年篩選順序` + (["一","二","三","四","五","六"][j-1])];
+                if(step) orders.push(step);
+            }
+            if(orders.length === 0) return `<div class="text-[10px] text-slate-300">該年無篩選順序資料</div>`;
+            return `<div class="text-[10px] font-bold text-slate-600 leading-relaxed"><span class="text-slate-400 mr-2">${yr}順序:</span>${orders.join(' → ')}</div>`;
+        }
+
+        function runFilter() {
+            const u = {
+                '國文': getPt('國文', parseInt(document.getElementById('ch').value || 0)),
+                '英文': getPt('英文', parseInt(document.getElementById('en').value || 0)),
+                '數學A': getPt('數學A', parseInt(document.getElementById('ma').value || 0)),
+                '數學B': getPt('數學B', parseInt(document.getElementById('mb').value || 0)),
+                '社會': getPt('社會', parseInt(document.getElementById('so').value || 0)),
+                '自然': getPt('自然', parseInt(document.getElementById('sc').value || 0))
+            };
+            const grp = document.getElementById('groupFilter').value;
+            const reg = document.getElementById('regionFilter').value;
+            const typ = document.getElementById('typeFilter').value;
+            const key = document.getElementById('keyword').value.toLowerCase();
+
+            const res = db.filter(i => {
+                const school = i['學校名稱'];
+                const dept = i['學系名稱'];
+                if(grp !== 'ALL' && i['學群'] !== grp) return false;
+                if(key && !(school+dept).toLowerCase().includes(key)) return false;
+                if(typ === 'PUBLIC' && !school.includes("國立")) return false;
+                if(typ === 'PRIVATE' && school.includes("國立")) return false;
+                if(reg !== 'ALL') {
+                    const matchRegion = regionMapping[reg].some(s => school.startsWith(s));
+                    if(!matchRegion) return false;
+                }
+                return (i['國文檢定點數']||0) <= u['國文'] && (i['英文檢定點數']||0) <= u['英文'] && 
+                       (i['數學A檢定點數']||0) <= u['數學A'] && (i['數學B檢定點數']||0) <= u['數學B'] && 
+                       (i['社會檢定點數']||0) <= u['社會'] && (i['自然檢定點數']||0) <= u['自然'];
+            });
+
+            document.getElementById('result-count').innerText = `${res.length} 筆`;
+            const container = document.getElementById('result-container');
+            if(res.length === 0) {
+                container.innerHTML = `<div class="py-20 text-center text-slate-400 font-bold bg-white rounded-3xl border-2 border-dashed">查無符合檢定之校系</div>`;
+                return;
+            }
+
+            container.innerHTML = res.map(i => `
+                <div class="bg-white rounded-[2rem] border border-slate-200 p-5 md:p-6 shadow-sm hover:shadow-xl transition-all">
+                    <div class="flex flex-col md:flex-row justify-between gap-4 mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span class="bg-slate-900 text-white text-[9px] font-black px-2 py-0.5 rounded">${i['學群']}</span>
+                                <span class="text-slate-300 text-[10px] font-bold">Code: ${i['學系代碼']}</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 leading-tight">${i['學校名稱']} ${i['學系名稱']}</h3>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                            ${renderThresholds(i)}
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex flex-wrap items-center gap-2 text-[10px] font-black">
+                            <span class="text-slate-400 uppercase">篩選倍率:</span>
+                            ${renderMultipliers(i)}
+                        </div>
+                        <div class="bg-slate-50/50 p-3 rounded-xl space-y-2">
+                            ${renderOrder(i, '114')}
+                            ${renderOrder(i, '113')}
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <a href="${i['校系分則網址']}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black shadow-md shadow-blue-100">📄 校系分則 ↗</a>
+                            <a href="${i['114年錄取標準連結']}" target="_blank" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black border border-slate-200">114 錄取 ↗</a>
+                            <a href="${i['113年錄取標準連結']}" target="_blank" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black border border-slate-200">113 錄取 ↗</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
